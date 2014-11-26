@@ -37,13 +37,20 @@ function handleYoutubeResults(results) {
 	var bestResult = results.items[0];
 	var videoId = bestResult.id.videoId;
 	var url = App.ytBaseVideoUrl + videoId;
-	var $link = linkFor(url, bestResult.snippet.title)
-	$('#log').append($link)
-	loaderContainerFor(videoId).insertAfter($link)
+	/*var $link = linkFor(url, bestResult.snippet.title)
+	$('#log').append($link)*/
+
+	$.tmpl($("#song_tpl"), {
+		id: videoId, 
+		title: bestResult.snippet.title, 
+		progress: 0
+	}).appendTo($('#log'))
+
+	//loaderContainerFor(videoId).insertAfter($link)
 	console.log(bestResult.snippet)
 	videos.push({
 		url: url,
-		title: bestResult.snippet.title
+		title: bestResult.snippet.title, 
 	})
 
 	if(nbFetched == nbSongs) {
@@ -65,14 +72,21 @@ function initConversion() {
 	var socket = io.connect('http://localhost')
 	socket.emit('init', videos)
 	socket.on('progress', function(data) {
-		var $el = $('#log').find('#'+data.videoId+"_loaderContainer");
+		$('#log')
+			.find('#song_' + data.videoId + ' .progress-bar')
+			.css('width', data.progress+"%")
+
+		/*var $el = $('#log').find('#song_' + data.videoId + ' .progress');
 		$el.text(data.progress+" %")
 		if(data.progress == 100) {
 			$el.html("&nbsp;Done !");
-		}
+		}*/
 	})
 
 	socket.on('done', function(zipUrl) {
-		$('#result').html(linkFor(zipUrl, ">> Download your music <<"))
+		$.tmpl($('#result_tpl'), {
+			url: zipUrl
+		}).appendTo($('#log'))
+		//$('#result').html(linkFor(zipUrl, ">> Download your music <<")).show()
 	})
 }
