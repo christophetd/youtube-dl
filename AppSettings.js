@@ -2,8 +2,15 @@ var AppSettings = {
 	defaultPort: 8080, 
 	defaultHost: "http://localhost", 
 	randomIdLength: 16, 
-	host: function(port) {
-		return process.env.host || AppSettings.defaultHost + ":" + port + "/"
+	tmpDir: "./tmp/", 
+	zipName: "music.zip",
+	host: function() {
+		var port 	= AppSettings.port()
+		var portStr = port == 80 ? '' : ':' + port
+		return (process.env.host || AppSettings.defaultHost) + portStr + '/'
+	}, 
+	port: function() {
+		return process.env.PORT || AppSettings.defaultPort
 	}
 }
 
