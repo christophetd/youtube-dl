@@ -11,8 +11,7 @@ var port = AppSettings.port()
 server.listen(port);
 
 
-app.get('/dl/:id', downloadHandler)
+app.get('/' + AppSettings.downloadRoute, downloadHandler)
 app.use(express.static(__dirname + '/static'));
-
 
 io.on('connection', socketHandler)

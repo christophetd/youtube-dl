@@ -2,8 +2,9 @@ var AppSettings = {
 	defaultPort: 8080, 
 	defaultHost: "http://localhost", 
 	randomIdLength: 16, 
-	tmpDir: "./tmp/", 
+	tmpDir: "tmp/", 
 	zipName: "music.zip",
+	downloadRoute: "dl/:id",
 	host: function() {
 		var port 	= AppSettings.port()
 		var portStr = port == 80 ? '' : ':' + port
