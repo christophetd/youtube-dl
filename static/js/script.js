@@ -14,7 +14,8 @@ function init() {
 }
 
 function parseSongsList() {
-	var songs = $('#songs').val().split("\n");
+	$('#search_container').hide(1000)
+	var songs = $('#songs_textarea').val().split("\n");
 	nbSongs = songs.length;
 	$('#log').empty()
 	for(var i in songs) {
@@ -44,7 +45,7 @@ function handleYoutubeResults(results) {
 		id: videoId, 
 		title: bestResult.snippet.title, 
 		progress: 0
-	}).appendTo($('#log'))
+	}).appendTo($('#songs'))
 
 	//loaderContainerFor(videoId).insertAfter($link)
 	console.log(bestResult.snippet)
@@ -72,15 +73,13 @@ function initConversion() {
 	var socket = io.connect('http://localhost')
 	socket.emit('init', videos)
 	socket.on('progress', function(data) {
-		$('#log')
-			.find('#song_' + data.videoId + ' .progress-bar')
-			.css('width', data.progress+"%")
-
-		/*var $el = $('#log').find('#song_' + data.videoId + ' .progress');
-		$el.text(data.progress+" %")
-		if(data.progress == 100) {
-			$el.html("&nbsp;Done !");
-		}*/
+		var $el = $('#songs').find('#song_' + data.videoId + ' .progress-bar')
+		$el.css('width', data.progress+"%")
+		if(data.progress >= 100) {
+			$el.removeClass('active')
+			$el.removeClass('progress-bar-striped')
+			$el.text("Done")
+		}
 	})
 
 	socket.on('done', function(zipUrl) {
