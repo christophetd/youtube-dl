@@ -3,14 +3,16 @@ var mkdir 			= require('mkdirp');
 var slugify			= require('slug');
 var AppSettings 	= require('./AppSettings')
 var Zipper			= require('adm-zip');
-var VideoFetcher	= require('./VideoFetcher');
-
+var Downloader		= require('./Downloader');
+var archiver		= require('archiver');
+var Q				= require('Q')
 var SocketHandler = function(socket) {
 	this.socket 		= socket
 	this.nbDownloaded 	= 0
 	this.nbErrors		= 0
 	this.nbVideos		= 0
 	this.randomId 		= ''
+	this.pendingDownloads = []
 	socket.on('init', this.init.bind(this))
 }
 
@@ -21,28 +23,16 @@ SocketHandler.prototype.init = function(videos) {
 	videos.forEach(function(videoInfo) {
 		var videoId 		= videoInfo.url.split("?v=")[1]
 		var sanitizedTitle 	= slugify(videoInfo.title, " ")
-
-		var fetcher = new VideoFetcher(videoInfo.url, this.destinationFolder + sanitizedTitle + ".mp3");
-		fetcher.onProgress(this.onDownloadProgress.bind(this, videoId))
-		fetcher
-		.fetch()
-		.then(
-			function success() {
-				++this.nbDownloaded
-				this.checkDownloadDone()
-			}.bind(this), 
-			function error() {
-				++this.nbErrors
-				this.checkDownloadDone()
-			}.bind(this)
-		)
+		var downloader = new Downloader(videoInfo.url, this.destinationFolder + sanitizedTitle + ".mp3");
+		downloader.onProgress(this.onDownloadProgress.bind(this, videoId))
+		this.pendingDownloads.push(downloader.download())
 	}.bind(this))
-}
 
-SocketHandler.prototype.checkDownloadDone = function() {
-	if(this.nbDownloaded + this.nbErrors == this.nbVideos) {
-		this.onMusicDownloaded()
-	}
+	Q.all(this.pendingDownloads)
+	 .then(this.onMusicDownloaded.bind(this))
+	 .fail(function() {
+	 	console.log("An error has occured")
+	 })
 }
 
 SocketHandler.prototype.onDownloadProgress = function(videoId, progress) {
@@ -61,14 +51,37 @@ SocketHandler.prototype.pickDestinationFolder = function() {
 }
 
 SocketHandler.prototype.onMusicDownloaded = function() {
+	console.log("Music downloaded !")
 	var zipPath = this.destinationFolder + AppSettings.zipName
-	var zip 	= new Zipper()
+	var zip = archiver('zip')
+	//var zip 	= new Zipper()
 	var fullUrl = AppSettings.host()  
 		+ AppSettings.downloadRoute.replace(/:id/, this.randomId)
 
-	console.log(this.destinationFolder)
-	zip.addLocalFolder(this.destinationFolder)
-	zip.writeZip(zipPath)
+	console.log("Dest folder : ./"+this.destinationFolder)
+	console.log("Dest zip : ./"+zipPath)
+
+	var stream = fs.createWriteStream("./"+zipPath)	
+	console.log("Stream ok")
+	stream.on('error', function() { console.log("Stream error ")})
+	zip.on('error', function(err) {
+		console.log("Error : %s", err)
+	})
+
+	zip.bulk([
+	  { src: ['./**'],  cwd: "./" + this.destinationFolder, expand: true}
+	]);
+	console.log("Bulk ok")
+	
+	zip.pipe(stream)	
+
+	console.log("pipe ok")
+	zip.finalize()
+
+
+
+	/*zip.addLocalFolder(this.destinationFolder)
+	zip.writeZip(zipPath)*/
 
 	this.socket.emit('done', fullUrl)
 }

@@ -14,7 +14,7 @@ function init() {
 }
 
 function parseSongsList() {
-	$('#search_container').hide(1000)
+	$('#search_container').slideUp(1000)
 	var songs = $('#songs_textarea').val().split("\n");
 	nbSongs = songs.length;
 	$('#log').empty()
@@ -73,6 +73,7 @@ function initConversion() {
 	var socket = io.connect('http://localhost')
 	socket.emit('init', videos)
 	socket.on('progress', function(data) {
+		console.log(data.progress)
 		var $el = $('#songs').find('#song_' + data.videoId + ' .progress-bar')
 		$el.css('width', data.progress+"%")
 		if(data.progress >= 100) {

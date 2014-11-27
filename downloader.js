@@ -1,57 +1,71 @@
-var ytdl = require('ytdl-core');
-var streamifier = require('streamifier')
+var Downloader 	= require('./downloader')
+var ffmpeg 		= require('fluent-ffmpeg')
+var fs 			= require('fs')
+var ytdl 		= require('ytdl-core')
+var Q			= require('Q')
 
-var Downloader = function(url) {
+var Downloader = function(url, destFile) {
 	this.url = url
+	this.destFile = destFile
+	this.onProgressCb = function(){}
+	this.progressStep = 5
+	this.totalSize = 0
 	this.sizeDownloaded = 0
 	this.downloadProgress = 0
-	this.totalSize = 0
-	this.progressStep = 5
-	this.callbacks = {}
-	this.buffer = []
 }
 
-Downloader.prototype.download = function() {
-	console.log("Downloading video")
-	this.stream = ytdl(this.url);
+/*
+ * Sets the callback to be called every [progressStep] % of the download progress
+ */
+Downloader.prototype.onProgress = function(cb) {
+	this.onProgressCb = cb
+}
 
-	this.stream.on('info', function(info, format) {
+/*
+ *	Launches the download. Returns a promise
+ */
+Downloader.prototype.download = function() {
+	var deferred = Q.defer()
+	this._download(deferred.resolve, deferred.reject)
+	return deferred.promise
+}
+
+/* 
+ *	Resolver for the download promise
+ */
+Downloader.prototype._download = function(success, error) {
+	var stream = ytdl(this.url)
+
+	stream.on('info', function(info, format) {
 		this.totalSize = format.size
 	}.bind(this))
 
-	this.stream.on('data', this.dataHandler.bind(this));
+	stream.on('error', error)
+
+	stream.on('data', this._onStreamDataReceived.bind(this))
+
+	new ffmpeg({
+		source: stream
+	})	
+	  .withAudioBitrate("320")
+	  .saveToFile(this.destFile)
+	  .on('end', success)
+	  .on('error', function() {
+			console.log("Error during conversion")
+			error.apply(arguments)
+	  })
 }
 
-Downloader.prototype.dataHandler = function(dataChunk) {
-	this.buffer.push(dataChunk)
-	this.sizeDownloaded += dataChunk.length
+Downloader.prototype._onStreamDataReceived = function(chunk) {
+	var size = chunk.length
+	this.sizeDownloaded += size
+
 	var progress = Math.floor(100 * this.sizeDownloaded / this.totalSize)
+
 	if(progress == 100 || progress >= this.downloadProgress + this.progressStep) {
 		this.downloadProgress = progress
-		this._trigger('progress', [progress])
-		if(progress == 100) {
-			this._trigger('done', [streamifier.createReadStream(Buffer.concat(this.buffer))])
-		}
+		this.onProgressCb.apply(null, [progress])
 	}
 }
 
-Downloader.prototype.on = function(event, cb) {
-	if(typeof cb === 'function') {
-		this.callbacks[event] = this.callbacks[event] || []
-		this.callbacks[event].push(cb)
-	}
-}
-
-Downloader.prototype._trigger = function(event, args) {
-	for(var i in this.callbacks[event]) {
-		//console.log(this.callbacks[event][i].toString())
-		this.callbacks[event][i].apply(this, args)
-	}
-}
-
-module.exports = exports.downloader = function(url) {
-	if (!/^https?:\/\/\w+\.youtube\.com\/watch\?v=/.test(url)) {
-		throw "Invalid youtube url given"+ url
-	}
-	return new Downloader(url)
-}
+module.exports = exports.Downloader = Downloader;
