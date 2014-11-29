@@ -1,4 +1,3 @@
-var Downloader 	= require('./downloader')
 var ffmpeg 		= require('fluent-ffmpeg')
 var fs 			= require('fs')
 var ytdl 		= require('ytdl-core')
