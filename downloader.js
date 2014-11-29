@@ -1,7 +1,7 @@
 var ffmpeg 		= require('fluent-ffmpeg')
 var fs 			= require('fs')
 var ytdl 		= require('ytdl-core')
-var Q			= require('Q')
+var Q			= require('q')
 
 var Downloader = function(options) {
 	this.url = options.url
