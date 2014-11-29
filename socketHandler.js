@@ -15,17 +15,25 @@ var SocketHandler = function(socket) {
 	this.nbVideos		= 0
 	this.randomId 		= ''
 	this.pendingDownloads = []
+	this.bitrate 		= AppSettings.defaultBitrate
 	socket.on('init', this.init.bind(this))
 }
 
-SocketHandler.prototype.init = function(videos) {
-	this.nbVideos = videos.length
+SocketHandler.prototype.init = function(infos) {
+	var videos 		= infos.videos
+	this.bitrate 	= infos.quality || this.bitrate
+	this.nbVideos 	= videos.length
 	this.pickDestinationFolder()
 
 	videos.forEach(function(videoInfo) {
 		var videoId 		= videoInfo.url.split("?v=")[1]
 		var sanitizedTitle 	= slugify(videoInfo.title, " ")
-		var downloader = new Downloader(videoInfo.url, this.destinationFolder + sanitizedTitle + ".mp3");
+		//var downloader = new Downloader(videoInfo.url, this.destinationFolder + sanitizedTitle + ".mp3");
+		var downloader = new Downloader({
+			url: videoInfo.url, 
+			destination: this.destinationFolder + sanitizedTitle + ".mp3", 
+			bitrate: this.bitrate
+		})
 		downloader.onProgress(this.onDownloadProgress.bind(this, videoId))
 		this.pendingDownloads.push(downloader.download())
 	}.bind(this))

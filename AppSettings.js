@@ -5,6 +5,7 @@ var AppSettings = {
 	tmpDir: "tmp/", 
 	zipName: "music.zip",
 	downloadRoute: "dl/:id",
+	defaultBitrate: 256,
 	host: function() {
 		var port 	= AppSettings.port()
 		var portStr = port == 80 ? '' : ':' + port

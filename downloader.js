@@ -4,11 +4,12 @@ var fs 			= require('fs')
 var ytdl 		= require('ytdl-core')
 var Q			= require('Q')
 
-var Downloader = function(url, destFile) {
-	this.url = url
-	this.destFile = destFile
+var Downloader = function(options) {
+	this.url = options.url
+	this.destFile = options.destination
+	this.bitrate = options.bitrate || 256
 	this.onProgressCb = function(){}
-	this.progressStep = 5
+	this.progressStep = options.progressStep || 5
 	this.totalSize = 0
 	this.sizeDownloaded = 0
 	this.downloadProgress = 0
@@ -47,7 +48,7 @@ Downloader.prototype._download = function(success, error) {
 	new ffmpeg({
 		source: stream
 	})	
-	  .withAudioBitrate("320")
+	  .withAudioBitrate(this.bitrate)
 	  .saveToFile(this.destFile)
 	  .on('end', success)
 	  .on('error', function() {

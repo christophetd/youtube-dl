@@ -6,6 +6,7 @@ var App = {
 var nbFetched = 0;
 var nbSongs = 0;
 var videos = [];
+var quality = 0;
 
 function init() {
 	gapi.client.load('youtube', 'v3');
@@ -14,13 +15,16 @@ function init() {
 }
 
 function parseSongsList() {
-	$('#search_container').slideUp(1000)
+	$('#search_container').slideUp(700)
+	quality = $('#quality').find(':selected').attr('value')
 	var songs = $('#songs_textarea').val().split("\n");
 	nbSongs = songs.length;
 	$('#log').empty()
 	for(var i in songs) {
 		lookupSong(songs[i]);
 	}
+
+	return false
 }
 
 function lookupSong(query) {
@@ -41,14 +45,15 @@ function handleYoutubeResults(results) {
 	/*var $link = linkFor(url, bestResult.snippet.title)
 	$('#log').append($link)*/
 
-	$.tmpl($("#song_tpl"), {
+	var $newSong = $.tmpl($("#song_tpl"), {
 		id: videoId, 
 		title: bestResult.snippet.title, 
 		progress: 0
 	}).appendTo($('#songs'))
 
-	//loaderContainerFor(videoId).insertAfter($link)
-	console.log(bestResult.snippet)
+	$newSong.find('.progress-percentage')
+			.text("Starting...")
+
 	videos.push({
 		url: url,
 		title: bestResult.snippet.title, 
@@ -59,14 +64,6 @@ function handleYoutubeResults(results) {
 			var $el = $(this).find('.glyphicon')
 			$el.toggleClass('glyphicon-chevron-right', 'glyphicon-chevron-down')
 			$el.toggleClass('glyphicon-chevron-down', 'glyphicon-chevron-right')
-			/*if($el.hasClass('glyphicon-chevron-right')) {
-				$el.removeClass('glyphicon-chevron-right')
-				$el.addClass('glyphicon-chevron-down')
-			}
-			else {
-				$el.removeClass('glyphicon-chevron-bottom')
-				$el.addClass('glyphicon-chevron-right')
-			}*/
 		})
 		initConversion();
 	}
@@ -84,7 +81,10 @@ function loaderContainerFor(videoId) {
 /* */
 function initConversion() {
 	var socket = io.connect('http://localhost')
-	socket.emit('init', videos)
+	socket.emit('init', {
+		videos: videos, 
+		quality: quality
+	})
 	socket.on('progress', function(data) {
 		console.log(data.progress)
 		var $song = $('#songs').find('#song_' + data.videoId)
