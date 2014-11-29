@@ -9,6 +9,7 @@ var downloadHandler = require('./downloadHandler')
 
 var port = AppSettings.port()
 server.listen(port);
+console.log("Listening on port %d", port)
 
 
 app.get('/' + AppSettings.downloadRoute, downloadHandler)

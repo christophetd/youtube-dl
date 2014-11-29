@@ -14,9 +14,14 @@ var handler = function(req, res, next) {
 	// Send zip in response
 	var fileStats = fs.statSync(zipPath)
 	res.writeHead(200, {
+		"Pragma": "public", 
+		"Expires": "0",
+		"Cache-Control": "must-revalidate, post-check=0, pre-check=0",
+		"Cache-Control": "public",
+		"Content-Description": "File Transfer",
 		"Content-Type": "application/octet-stream", 
-		"Content-Length": fileStats.size, 
-		"Content-Disposition": 'inline; filename="musics.zip"'
+		"Content-Disposition": 'attachment; filename="musics.zip"',
+		"Content-Length": fileStats.size
 	})
 
 	var stream = fs.createReadStream(zipPath)

@@ -13,7 +13,7 @@
   <!-- Templates -->
   <template id="song_tpl">
 	<div class="panel panel-default">
-		<a class="panel-heading row" role="tab" id="song_${id}" data-toggle="collapse" data-parent="#songs" href="#song_${id}_yt_results" style="display: block;">
+		<a class="panel-heading row toggle-header" role="tab" id="song_${id}" data-toggle="collapse"  href="#song_${id}_yt_results" style="display: block;">
 			<div class="col-lg-4">
 				<h4 class="panel-title" class="col-lg-2">
 					${title}
@@ -23,8 +23,13 @@
 				<div class="progress">
 						<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: ${progress} %; margin: 0px"></div>
 				</div>
+
 			</div>
-			<div class="col-lg-2">
+			<div class="col-lg-1">
+				<div class="progress-percentage"></div>
+			</div>
+
+			<div class="col-lg-1">
 				<span class="pull-right glyphicon glyphicon-chevron-right"></span>
 			</div>
 		</a>
@@ -44,8 +49,16 @@
 
   <template id="result_tpl">
   	<div class="alert alert-success">
-  		<h2 class="text-center"><a href="${url}">&gt;&gt; Download your music! &lt;&lt;</a></h2>
+  		<h2 class="text-center"><a download href="${url}">&gt;&gt; Download your music! &lt;&lt;</a></h2>
   	</div>
+  </template>
+
+  <template id="error_tpl">
+	<div class="alert alert-danger">
+	  Something went wrong.<br />
+	  Details : <br />
+	  <pre>${err}</pre>
+	</div>
   </template>
   <!-- End templates -->
 
@@ -73,6 +86,7 @@
 	  <div class="row">
 		<h1 class="text-center">Youtube mp3 downloader</h1>
 		<br /><br />
+		<div id="msg_container"></div>
 		<div id="search_container">
 			<textarea class="form-control" id="songs_textarea" rows="10" cols="50">
 south park alerte au gogole

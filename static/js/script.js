@@ -55,6 +55,19 @@ function handleYoutubeResults(results) {
 	})
 
 	if(nbFetched == nbSongs) {
+		$('.toggle-header').click(function() {
+			var $el = $(this).find('.glyphicon')
+			$el.toggleClass('glyphicon-chevron-right', 'glyphicon-chevron-down')
+			$el.toggleClass('glyphicon-chevron-down', 'glyphicon-chevron-right')
+			/*if($el.hasClass('glyphicon-chevron-right')) {
+				$el.removeClass('glyphicon-chevron-right')
+				$el.addClass('glyphicon-chevron-down')
+			}
+			else {
+				$el.removeClass('glyphicon-chevron-bottom')
+				$el.addClass('glyphicon-chevron-right')
+			}*/
+		})
 		initConversion();
 	}
 }
@@ -74,12 +87,15 @@ function initConversion() {
 	socket.emit('init', videos)
 	socket.on('progress', function(data) {
 		console.log(data.progress)
-		var $el = $('#songs').find('#song_' + data.videoId + ' .progress-bar')
-		$el.css('width', data.progress+"%")
+		var $song = $('#songs').find('#song_' + data.videoId)
+		var $progressBar = $song.find('.progress-bar')
+		var $progress = $song.find('.progress-percentage')
+		$progressBar.css('width', data.progress+'%')
+		$progress.text(data.progress + " %")
 		if(data.progress >= 100) {
-			$el.removeClass('active')
-			$el.removeClass('progress-bar-striped')
-			$el.text("Done")
+			$progressBar.removeClass('active')
+			$progressBar.removeClass('progress-bar-striped')
+			$progressBar.text("Done")
 		}
 	})
 
@@ -88,5 +104,13 @@ function initConversion() {
 			url: zipUrl
 		}).appendTo($('#log'))
 		//$('#result').html(linkFor(zipUrl, ">> Download your music <<")).show()
+	})
+
+	socket.on('error', function(err) {
+		console.log("error")
+		var $err = $.tmpl($('#error_tpl'), {
+			err: err
+		})
+		$('#msg_container').append($err)
 	})
 }
