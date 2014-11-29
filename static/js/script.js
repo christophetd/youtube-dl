@@ -99,11 +99,11 @@ function initConversion() {
 		}
 	})
 
-	socket.on('done', function(zipUrl) {
+	socket.on('done', function(result) {
 		$.tmpl($('#result_tpl'), {
-			url: zipUrl
+			url: result.url, 
+			size: Math.round(100 *result.size / (1024 * 1024)) / 100
 		}).appendTo($('#log'))
-		//$('#result').html(linkFor(zipUrl, ">> Download your music <<")).show()
 	})
 
 	socket.on('error', function(err) {

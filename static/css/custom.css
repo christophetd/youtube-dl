@@ -9,15 +9,7 @@
 	margin-top: 20px;
 }
 
-a, a:visited {
-	color: black;
-}
 
-a:hover, a:active {
-	text-transform: none;
-	font-weight: bold;
-	color: black;
-}
 
 .song-title, .song-title:hover {
 	color: black;

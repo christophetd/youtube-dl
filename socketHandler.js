@@ -80,7 +80,14 @@ SocketHandler.prototype.onMusicDownloaded = function() {
 	zip.pipe(stream)	
 	zip.finalize()
 
-	this.socket.emit('done', fullUrl)
+	stream.on('close', function() {
+		this.socket.emit('done', {
+			url: fullUrl, 
+			size: zip.pointer()
+		})
+	}.bind(this))
+
+	
 }
 
 module.exports = function(socket) {
