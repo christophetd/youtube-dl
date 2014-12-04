@@ -24,7 +24,7 @@ function parseSongsList() {
 	var songs = $('#songs_textarea').val().split("\n");
 	nbSongs = songs.length;
 	$('#log').empty()
-	for(var i in songs) {
+	for(var i in songs.reverse()) {
 		lookupSong(songs[i]);
 	}
 
