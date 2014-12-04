@@ -21,11 +21,13 @@ function parseSongsList() {
 	})
 
 	quality = $('#quality').find(':selected').attr('value')
-	var songs = $('#songs_textarea').val().split("\n");
+	var songs = $('#songs_textarea').val().split("\n")//.reverse();
 	nbSongs = songs.length;
 	$('#log').empty()
-	for(var i in songs.reverse()) {
-		lookupSong(songs[i]);
+	for(var i in songs) {
+		if(songs[i].trim().length > 0) {
+			lookupSong(songs[i]);
+		}
 	}
 
 	return false
