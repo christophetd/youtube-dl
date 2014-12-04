@@ -127,7 +127,7 @@ function initConversion() {
 	$('body').find('.progress-percentage')
 			.text("Starting...")
 	var videos = getVideos();
-	var socket = io.connect('http://localhost')
+	var socket = io.connect(window.location.href)
 	socket.emit('init', {
 		videos: videos, 
 		quality: quality
