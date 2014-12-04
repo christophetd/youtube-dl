@@ -12,10 +12,15 @@ function init() {
 	gapi.client.load('youtube', 'v3');
 	gapi.client.setApiKey(App.apiKey);
 	$('#search').click(parseSongsList);
+	$('#launch-conversion').click(initConversion)
 }
 
 function parseSongsList() {
-	$('#search_container').slideUp(700)
+	$('#search_container').slideUp(700, function() {
+		$('#launch-conversion-container').removeClass('hidden')
+		$('#launch-conversion-container').fadeIn(500);
+	})
+
 	quality = $('#quality').find(':selected').attr('value')
 	var songs = $('#songs_textarea').val().split("\n");
 	nbSongs = songs.length;
@@ -31,6 +36,7 @@ function lookupSong(query) {
 	var request = gapi.client.youtube.search.list({
 	   q: query,
 	   part: 'snippet', 
+	   maxResults: 5
 	 });
 
 	request.execute(handleYoutubeResults)	
@@ -42,8 +48,6 @@ function handleYoutubeResults(results) {
 	var bestResult = results.items[0];
 	var videoId = bestResult.id.videoId;
 	var url = App.ytBaseVideoUrl + videoId;
-	/*var $link = linkFor(url, bestResult.snippet.title)
-	$('#log').append($link)*/
 
 	var $newSong = $.tmpl($("#song_tpl"), {
 		id: videoId, 
@@ -51,8 +55,28 @@ function handleYoutubeResults(results) {
 		progress: 0
 	}).appendTo($('#songs'))
 
-	$newSong.find('.progress-percentage')
-			.text("Starting...")
+	for(var i in results.items) {
+		var result = results.items[i];
+		var $result = $.tmpl($('#youtube_results_tpl'), {
+			duration: "0:00", 
+			title: result.snippet.title, 
+			thumbnail_url: result.snippet.thumbnails.default.url, 
+			url: App.ytBaseVideoUrl + result.id.videoId
+		}).appendTo($newSong.find('.youtube-results'))
+
+		if(i == 0) {
+			$result.addClass('selected');
+		}
+
+		$result.click(function($song) {
+			$(this).parent().find('.youtube-result.selected').each(function() {
+				$(this).removeClass('selected');
+			})
+			$song.find('.panel-title').text($(this).find('.title').text());
+			$(this).toggleClass('selected');
+
+		}.bind($result, $newSong))
+	}
 
 	videos.push({
 		url: url,
@@ -65,7 +89,6 @@ function handleYoutubeResults(results) {
 			$el.toggleClass('glyphicon-chevron-right', 'glyphicon-chevron-down')
 			$el.toggleClass('glyphicon-chevron-down', 'glyphicon-chevron-right')
 		})
-		initConversion();
 	}
 }
 
@@ -79,7 +102,31 @@ function loaderContainerFor(videoId) {
 }
 
 /* */
+
+function getVideos() {
+	var videos = []
+	$('.song-container').each(function() {
+		var infos = {}
+		infos.title = $(this).find('.panel-title').text()
+		infos.refId = $(this).find('.panel-heading').first().attr('data-ref-id')
+		infos.url = $(this).find('.youtube-result.selected').first().attr('data-url');
+		videos.push(infos)
+	})
+	console.log(videos)
+	return videos
+}
+
+function collapseYoutubeResults() {
+	$('.toggle-header.panel-heading').addClass('collapsed')
+}
+
+
 function initConversion() {
+	collapseYoutubeResults();
+	$('#launch-conversion').fadeOut(200)
+	$('body').find('.progress-percentage')
+			.text("Starting...")
+	var videos = getVideos();
 	var socket = io.connect('http://localhost')
 	socket.emit('init', {
 		videos: videos, 

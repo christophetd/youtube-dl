@@ -27,14 +27,15 @@ SocketHandler.prototype.init = function(infos) {
 
 	videos.forEach(function(videoInfo) {
 		var videoId 		= videoInfo.url.split("?v=")[1]
+		var videoRefId		= videoInfo.refId
 		var sanitizedTitle 	= slugify(videoInfo.title, " ")
-		//var downloader = new Downloader(videoInfo.url, this.destinationFolder + sanitizedTitle + ".mp3");
+
 		var downloader = new Downloader({
 			url: videoInfo.url, 
 			destination: this.destinationFolder + sanitizedTitle + ".mp3", 
 			bitrate: this.bitrate
 		})
-		downloader.onProgress(this.onDownloadProgress.bind(this, videoId))
+		downloader.onProgress(this.onDownloadProgress.bind(this, videoRefId))
 		this.pendingDownloads.push(downloader.download())
 	}.bind(this))
 
@@ -46,10 +47,10 @@ SocketHandler.prototype.init = function(infos) {
 	 }.bind(this))
 }
 
-SocketHandler.prototype.onDownloadProgress = function(videoId, progress) {
+SocketHandler.prototype.onDownloadProgress = function(videoRefId, progress) {
 	this.socket.emit("progress", {
 		progress: progress, 
-		videoId: videoId
+		videoId: videoRefId
 	})
 }
 
