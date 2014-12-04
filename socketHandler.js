@@ -65,7 +65,7 @@ SocketHandler.prototype.onMusicDownloaded = function() {
 	var zipPath = this.destinationFolder + AppSettings.zipName
 	var zip = archiver('zip')
 	var stream = fs.createWriteStream("./"+zipPath)	
-	var fullUrl = AppSettings.host()  
+	var fullUrl = "/" 
 		+ AppSettings.downloadRoute.replace(/:id/, this.randomId)
 
 	stream.on('error', function(err) { throw err })

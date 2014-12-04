@@ -40,7 +40,10 @@ Downloader.prototype._download = function(success, error) {
 		this.totalSize = format.size
 	}.bind(this))
 
-	stream.on('error', error)
+	stream.on('error', function(e) {
+		console.log(e);
+		error();
+	})
 
 	stream.on('data', this._onStreamDataReceived.bind(this))
 
@@ -52,6 +55,7 @@ Downloader.prototype._download = function(success, error) {
 	  .on('end', success)
 	  .on('error', function() {
 			console.log("Error during conversion")
+			console.log(arguments)
 			error.apply(arguments)
 	  })
 }
