@@ -11,8 +11,12 @@ var port = AppSettings.port()
 server.listen(port);
 console.log("Listening on port %d", port)
 
+app.use(function(err, req, res, next) {
+	console.log("Trying to get "+req.originalUrl);
+	next();
+}); 
 
-app.get('/' + AppSettings.downloadRoute, downloadHandler)
+app.get('/youtube-downloader/' + AppSettings.downloadRoute, downloadHandler)
 app.use(express.static(__dirname + '/static'));
 
 io.on('connection', socketHandler)

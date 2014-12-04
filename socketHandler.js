@@ -3,9 +3,8 @@ var Downloader		= require('./Downloader');
 var randomString 	= require('random-string');
 var mkdir 			= require('mkdirp');
 var slugify			= require('slug');
-var Zipper			= require('adm-zip');
 var archiver		= require('archiver');
-var Q				= require('Q');
+var Q				= require('q');
 var fs 				= require('fs');
 
 var SocketHandler = function(socket) {
