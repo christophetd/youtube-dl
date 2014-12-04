@@ -108,8 +108,8 @@ function getVideos() {
 }
 
 function collapseYoutubeResults() {
-	$('.song-results').removeClass('in')
-	$('.song-results').collapse()
+	$('.song-results.in').removeClass('in')
+	//$('.song-results').collapse()
 }
 
 
