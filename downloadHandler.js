@@ -2,6 +2,7 @@ var AppSettings = require('./AppSettings')
 var fs 			= require('fs')
 
 var handler = function(req, res, next) {
+	
 	var id = req.params.id
 	var zipPath = AppSettings.tmpDir + id + '/' + AppSettings.zipName
 	var regex = new RegExp("^[a-zA-Z0-9]{"+AppSettings.randomIdLength+"}$")

@@ -17,8 +17,7 @@ function init() {
 
 function parseSongsList() {
 	$('#search_container').slideUp(700, function() {
-		$('#launch-conversion-container').removeClass('hidden')
-		$('#launch-conversion-container').fadeIn(500);
+		$('#launch-conversion').css('visibility', 'visible')
 	})
 
 	quality = $('#quality').find(':selected').attr('value')
@@ -92,17 +91,7 @@ function handleYoutubeResults(results) {
 	}
 }
 
-function linkFor(url, text) {
-	return $('<a></a>').attr("href", url).text(text).prepend("<br />");
-}
-
-function loaderContainerFor(videoId) {
-	var $el = $('<span></span>').attr("id", videoId+"_loaderContainer")
-	return $el;
-}
-
-/* */
-
+// Get wanted URLs from selected videos
 function getVideos() {
 	var videos = []
 	$('.song-container').each(function() {
@@ -117,12 +106,14 @@ function getVideos() {
 }
 
 function collapseYoutubeResults() {
-	$('.toggle-header.panel-heading').addClass('collapsed')
+	$('.song-results').removeClass('in')
+	$('.song-results').collapse()
 }
 
 
 function initConversion() {
 	collapseYoutubeResults();
+	$('.progress').removeClass('hidden');
 	$('#launch-conversion').fadeOut(200)
 	$('body').find('.progress-percentage')
 			.text("Starting...")

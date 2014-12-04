@@ -20,7 +20,7 @@
 				</h4>
 			</div>
 			<div class="col-lg-6">
-				<div class="progress">
+				<div class="progress hidden">
 						<div class="progress-bar progress-bar-success progress-bar-striped active" role="progressbar" style="width: ${progress} %; margin: 0px"></div>
 				</div>
 
@@ -34,7 +34,7 @@
 			</div>
 		</a>
 
-		<div id="song_${id}_yt_results" class="panel-collapse collapse" role="tabpanel">
+		<div id="song_${id}_yt_results" class="song-results panel-collapse collapse" role="tabpanel">
 	      <div class="panel-body">
 	      	<div class="youtube-results">
 	      		<!-- Youtube results here -->
@@ -51,7 +51,7 @@
   		<div class="col-lg-1 thumbnail"><img src="${thumbnail_url}" alt="Thumbnail" /></div>
   		<div class="col-lg-10">
   			<h5 class="title">${title}</h5>
-  			<span class="duration">(${duration})</span>
+  			<!--<span class="duration">(${duration})</span>-->
   			<p class="link"><a href="${url}" target="__blank" title="Watch video">Watch video</a></p>
   		</div>
   	</div>
@@ -97,10 +97,10 @@
 		<h1 class="text-center">Youtube mp3 downloader</h1>
 		<br /><br />
 
-		<div id="launch-conversion-container" class="row hidden col-lg-3 col-lg-offset-5">
+		<div id="launch-conversion-container" class="row col-lg-3 col-lg-offset-5">
 			<button id="launch-conversion" class="btn btn-default">Launch conversion !</button>
 		</div>
-
+		<div class="clearfix"></div>
 		<div id="msg_container row"></div>
 		<div id="search_container">
 		  <form class="form-horizontal row">
@@ -126,15 +126,17 @@
 		  </form>
 		</div>
 
+		<div id="log" class="row col-lg-12">
+
+		</div>
+
 		<div id="songs" role="tablist" class="col-lg-12">
-
+			<!-- Songs list here -->
 		</div>
 
 
 
-		<div id="log" class="col-lg-12">
 
-		</div>
 		
 	  </div>
 	</div>

@@ -32,8 +32,8 @@ textarea#songs_textarea {
 	cursor: pointer;
 }
 
-#launch-conversion-container {
-	display: none;
+#launch-conversion {
+	visibility: hidden;
 }
 
 .thumbnail {
