@@ -23,3 +23,20 @@ textarea#songs_textarea {
 	font-family: Tahoma, sans-serif;
 	font-size: 1.3em;
 }
+
+.youtube-result.selected {
+	background-color: #c7dffc;
+}
+
+.youtube-result {
+	cursor: pointer;
+}
+
+#launch-conversion-container {
+	display: none;
+}
+
+.thumbnail {
+	margin-top: 10px;
+	padding: 0px;
+}

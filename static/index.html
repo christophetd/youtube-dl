@@ -12,8 +12,8 @@
   <body>
   <!-- Templates -->
   <template id="song_tpl">
-	<div class="panel panel-default">
-		<a class="panel-heading row toggle-header" role="tab" id="song_${id}" data-toggle="collapse"  href="#song_${id}_yt_results" style="display: block;">
+	<div class="panel panel-default song-container">
+		<a class="panel-heading row toggle-header" role="tab" data-ref-id="${id}" id="song_${id}" data-toggle="collapse"  href="#song_${id}_yt_results" style="display: block;">
 			<div class="col-lg-4">
 				<h4 class="panel-title" class="col-lg-2">
 					${title}
@@ -34,17 +34,27 @@
 			</div>
 		</a>
 
-		<div id="song_${id}_yt_results" class="panel-collapse collapse" role="tabpanel" aria-labelledby="song_${id}">
+		<div id="song_${id}_yt_results" class="panel-collapse collapse" role="tabpanel">
 	      <div class="panel-body">
-	      	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-	      	tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-	      	quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-	      	consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-	      	cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-	      	proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+	      	<div class="youtube-results">
+	      		<!-- Youtube results here -->
+	      	</div>
 	      </div>
 	    </div>
+	    
 	</div>
+
+  </template>
+
+  <template id="youtube_results_tpl">
+  	<div class="row youtube-result" data-url="${url}">
+  		<div class="col-lg-1 thumbnail"><img src="${thumbnail_url}" alt="Thumbnail" /></div>
+  		<div class="col-lg-10">
+  			<h5 class="title">${title}</h5>
+  			<span class="duration">(${duration})</span>
+  			<p class="link"><a href="${url}" target="__blank" title="Watch video">Watch video</a></p>
+  		</div>
+  	</div>
   </template>
 
   <template id="result_tpl">
@@ -86,6 +96,11 @@
 	  <div>
 		<h1 class="text-center">Youtube mp3 downloader</h1>
 		<br /><br />
+
+		<div id="launch-conversion-container" class="row hidden col-lg-3 col-lg-offset-5">
+			<button id="launch-conversion" class="btn btn-default">Launch conversion !</button>
+		</div>
+
 		<div id="msg_container row"></div>
 		<div id="search_container">
 		  <form class="form-horizontal row">
@@ -102,10 +117,10 @@
 
 			<div class="form-group row">
 				<p>What songs do you want to download? <span style="font-size: 0.8em">(1 per line)</span></p>
-				<textarea class="form-control" id="songs_textarea" rows="10" cols="50" placeholder="e.g. Muse plug in baby"></textarea>
+				<textarea class="form-control" id="songs_textarea" rows="10" cols="50" placeholder="e.g. Muse plug in baby">alerte aux gogoles</textarea>
 				<br />
 				<div class="col-lg-3 col-lg-offset-5">
-					<button id="search" class="btn btn-default">Chercher !</button>
+					<button id="search" class="btn btn-default">Search songs</button>
 				</div>
 			</div>
 		  </form>
